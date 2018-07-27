@@ -1,4 +1,5 @@
 # Simple Rest Client
+[![Build Status](https://travis-ci.com/DeLaiT/SimpleRestClient-Android.svg?branch=master)](https://travis-ci.com/DeLaiT/SimpleRestClient-Android)
 - [x] serializing json response
 - [x] raw responses
 - [x] headers
