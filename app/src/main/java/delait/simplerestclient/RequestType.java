@@ -4,5 +4,6 @@ public enum RequestType {
     GET,
     POST,
     DELETE,
-    PUT
+    PUT,
+    PATCH
 }

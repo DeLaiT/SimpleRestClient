@@ -67,7 +67,7 @@ public class RestRequest {
     private void setupConnection(HttpURLConnection connection) throws Exception {
         connection.setRequestMethod(getRequestTypeFromEnum(type));
         connection.setDoInput(true);
-        connection.setDoOutput(true);
+        connection.setDoOutput(requestBody != null);
         connection.setReadTimeout(client.timeout);
         connection.setConnectTimeout(client.timeout);
 
@@ -139,6 +139,8 @@ public class RestRequest {
                 return "DELETE";
             case PUT:
                 return "PUT";
+            case PATCH:
+                return "PATCH";
             default:
                 return "GET";
         }
