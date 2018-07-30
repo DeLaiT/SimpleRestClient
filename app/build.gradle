@@ -7,6 +7,7 @@ android {
         targetSdkVersion 27
         versionCode 1
         versionName "1.0"
+        setProperty("archivesBaseName", "simplerestclient")
     }
     buildTypes {
         release {
@@ -14,6 +15,8 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+
 }
 
 dependencies {

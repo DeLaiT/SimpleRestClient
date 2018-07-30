@@ -64,6 +64,10 @@ public class RestRequest {
         });
     }
 
+    public void addHeaders(RestRequestHeader... headers){
+        this.headers.addAll(Arrays.asList(headers));
+    }
+
     private void setupConnection(HttpURLConnection connection) throws Exception {
         connection.setRequestMethod(getRequestTypeFromEnum(type));
         connection.setDoInput(true);
