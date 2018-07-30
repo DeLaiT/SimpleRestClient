@@ -1,11 +1,13 @@
 package delait.simplerestclient;
 
 import android.os.AsyncTask;
+import android.telecom.Call;
 import android.util.Log;
 
 import com.google.gson.Gson;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -55,6 +57,23 @@ public class RestRequest {
                     setupConnection(connection);
                     tryToSendRequestBody(connection);
                     handleObjectResponse(connection, callback, objectClass);
+                } catch (Exception e) {
+                    Log.e(TAG, e.getMessage());
+                    e.printStackTrace();
+                    callback.onFailure(e.getMessage(), 0);
+                }
+            }
+        });
+    }
+
+    public void getBytesAsync(final Callback<byte[]> callback){
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                    setupConnection(connection);
+                    tryToSendRequestBody(connection);
                 } catch (Exception e) {
                     Log.e(TAG, e.getMessage());
                     e.printStackTrace();
@@ -115,6 +134,25 @@ public class RestRequest {
         else {
             Log.w(TAG, getRequestTypeFromEnum(type) + " result: " + connection.getResponseCode() + " " + connection.getResponseMessage());
             callback.onFailure(response, connection.getResponseCode());
+        }
+    }
+
+    private void handleBytesResponse(HttpURLConnection connection, Callback<byte[]> callback) throws Exception{
+        if(connection.getResponseCode() < 300){
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            InputStream in = connection.getInputStream();
+
+            byte[] b = new byte[1024];
+            int s = 0;
+
+            while ((s = in.read(b)) > 0) {
+                baos.write(b, 0, s);
+            }
+
+            callback.onSuccess(baos.toByteArray(), connection.getResponseCode());
+        }
+        else{
+            callback.onFailure(readResponse(connection), connection.getResponseCode());
         }
     }
 
