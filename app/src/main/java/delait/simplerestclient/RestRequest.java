@@ -107,7 +107,7 @@ public class RestRequest {
             if(requestBody instanceof String)
                 wr.writeBytes((String)requestBody);
             else
-                wr.writeBytes(new Gson().toJson(requestBody));
+                wr.writeBytes(client.gson.toJson(requestBody));
             wr.close();
         }
     }
@@ -130,7 +130,7 @@ public class RestRequest {
 
         if(connection.getResponseCode() < 300){
             Log.i(TAG, getRequestTypeFromEnum(type) + " result: " + connection.getResponseCode() + " " + connection.getResponseMessage());
-            callback.onSuccess(new Gson().fromJson(response, objectClass), connection.getResponseCode());
+            callback.onSuccess(client.gson.fromJson(response, objectClass), connection.getResponseCode());
         }
         else {
             Log.w(TAG, getRequestTypeFromEnum(type) + " result: " + connection.getResponseCode() + " " + connection.getResponseMessage());
