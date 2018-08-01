@@ -5,6 +5,7 @@
 - [x] headers
 - [x] Post objects and Strings 
 - [x] responses in byte arrays
+- [ ] request body in byte array
 ### Installation
 1. Copy .arr file from builds folder to /libs in your project
 2. add dependency to build.graddle
