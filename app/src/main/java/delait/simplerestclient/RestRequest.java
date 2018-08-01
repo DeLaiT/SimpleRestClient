@@ -74,6 +74,7 @@ public class RestRequest {
                     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                     setupConnection(connection);
                     tryToSendRequestBody(connection);
+                    handleBytesResponse(connection, callback);
                 } catch (Exception e) {
                     Log.e(TAG, e.getMessage());
                     e.printStackTrace();
