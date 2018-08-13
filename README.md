@@ -8,7 +8,7 @@ dependencies {
 ```
 
 ### Examples
-##### Rest Client
+#### Rest Client
 Client with default settings
 ``` Java
 static final RestClient restClient = new RestClient("localhost:8000");
@@ -21,12 +21,12 @@ static final RestClient restClient  = new RestClient.Builder("localhost:8000")
         .build();
 ```
 
-##### Rest Request
+#### Rest Request
 Get request
 ``` Java
 RestRequest request = new RestRequest.Builder(restClient, "user/")
         .requestType(RequestType.GET)
-        .addHeaders(new RestRequestHeader("TOKEN", SessionManager.getInstance().token))
+        .addHeaders(new RestRequestHeader("TOKEN", token))
         .build();
 ```
 Post request
@@ -38,7 +38,7 @@ RestRequest request = new RestRequest.Builder(restClient, "user/create/")
         .build();
 ```
 
-##### Executing requests
+#### Executing requests
 Object response from json
 ```Java
 request.executeAsync(User.class, callback);
@@ -51,7 +51,7 @@ Response from bytes (might be used for downloading images from server)
 ```Java
 request.getBytesAsync(callback)
 ```
-##### Callbacks
+#### Callbacks
 Callback types: Object, String, byte[]
 example:
 ``` Java
