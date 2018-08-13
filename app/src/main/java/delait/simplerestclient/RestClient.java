@@ -18,12 +18,12 @@ public class RestClient {
         }
     }
 
-    private RestClient(String url){
+    public RestClient(String url){
         setURL(url);
     }
 
 
-    static class Builder{
+    public static class Builder{
         RestClient restClient;
 
         public Builder(String url){
