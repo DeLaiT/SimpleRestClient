@@ -104,10 +104,19 @@ public class RestRequest {
     private void tryToSendRequestBody(HttpURLConnection connection) throws Exception {
         if (requestBody != null) {
             DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
+
             if(requestBody instanceof String)
                 wr.writeBytes((String)requestBody);
+            else if(requestBody instanceof byte[]) {
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                out.write((byte[]) requestBody);
+                out.writeTo(connection.getOutputStream());
+                out.flush();
+                out.close();
+            }
             else
                 wr.writeBytes(client.gson.toJson(requestBody));
+
             wr.close();
         }
     }
