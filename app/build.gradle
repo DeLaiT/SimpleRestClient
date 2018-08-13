@@ -1,5 +1,11 @@
 apply plugin: 'com.android.library'
 
+ext{
+    PUBLISH_GROUP_ID = 'delait.android'
+    PUBLISH_ARTIFACT_ID = 'simple-rest-client'
+    PUBLISH_VERSION = '1.0.0'
+}
+
 android {
     compileSdkVersion 27
     defaultConfig {
@@ -20,3 +26,5 @@ android {
 dependencies {
     implementation 'com.google.code.gson:gson:2.8.5'
 }
+
+apply from: 'https://raw.githubusercontent.com/blundell/release-android-library/master/android-release-aar.gradle'
