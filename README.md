@@ -8,6 +8,29 @@ dependencies {
 ```
 
 ### Examples
+``` Java
+static final RestClient restClient = new RestClient("localhost:8000");
+
+RestRequest request = new RestRequest.Builder(restClient, "user/")
+        .requestType(RequestType.GET)
+        .addHeaders(new RestRequestHeader("TOKEN", token))
+        .build();
+
+new Callback<Object>() {
+            @Override
+            public void onSuccess(Object response, int responseCode) {
+                User user = (User) response;
+                //...
+            }
+
+            @Override
+            public void onFailure(String s, int i) {
+                Log.e(TAG, "failed to load user data | " + s + " " i );
+            }
+        });
+
+request.executeAsync(User.class, callback);
+```
 #### Rest Client
 Client with default settings
 ``` Java
@@ -52,7 +75,7 @@ Response from bytes (might be used for downloading images from server)
 request.getBytesAsync(callback)
 ```
 #### Callbacks
-Callback types: Object, String, byte[]
+Callback types: Object, String, byte[]  
 example:
 ``` Java
 new Callback<Object>() {
