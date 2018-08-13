@@ -5,11 +5,11 @@
 - [x] headers
 - [x] Post objects and Strings 
 - [x] responses in byte arrays
-- [ ] request body in byte array
+- [x] request body in byte array
 ### Installation
 ``` gradle
 dependencies {
-    implementation 'delait.android:simple-rest-client:1.0.0'
+    implementation 'delait.android:simple-rest-client:1.0.1'
 }
 ```
 
