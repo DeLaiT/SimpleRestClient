@@ -130,7 +130,7 @@ public class RestRequest {
         }
         else {
             Log.w(TAG, getRequestTypeFromEnum(type) + " result: " + connection.getResponseCode() + " " + connection.getResponseMessage());
-            callback.onFailure(response, connection.getResponseCode());
+            callback.onFailure(connection.getResponseMessage(), connection.getResponseCode());
         }
     }
 
@@ -143,7 +143,7 @@ public class RestRequest {
         }
         else {
             Log.w(TAG, getRequestTypeFromEnum(type) + " result: " + connection.getResponseCode() + " " + connection.getResponseMessage());
-            callback.onFailure(response, connection.getResponseCode());
+            callback.onFailure(connection.getResponseMessage(), connection.getResponseCode());
         }
     }
 
@@ -162,7 +162,7 @@ public class RestRequest {
             callback.onSuccess(baos.toByteArray(), connection.getResponseCode());
         }
         else{
-            callback.onFailure(readResponse(connection), connection.getResponseCode());
+            callback.onFailure(connection.getResponseMessage(), connection.getResponseCode());
         }
     }
 
