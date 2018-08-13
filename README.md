@@ -7,14 +7,10 @@
 - [x] responses in byte arrays
 - [ ] request body in byte array
 ### Installation
-1. Copy .arr file from builds folder to /libs in your project
-2. add dependency to build.graddle
-``` graddle
+``` gradle
 dependencies {
-    implementation files('libs/simplerestclient.aar')
+    implementation 'delait.android:simple-rest-client:1.0.0'
 }
 ```
-3. Build > Clean Project
-4. Sync graddle & Build
 
 
