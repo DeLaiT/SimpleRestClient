@@ -16,7 +16,7 @@ RestRequest request = new RestRequest.Builder(restClient, "user/")
         .addHeaders(new RestRequestHeader("TOKEN", token))
         .build();
 
-new Callback() {
+Callback callback = new Callback() {
             @Override
             public void onSuccess(RestResponse restResponse) {
                 User user = (User) restResponse.getResponseBody(User.class);
