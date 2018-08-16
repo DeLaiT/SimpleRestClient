@@ -16,20 +16,20 @@ RestRequest request = new RestRequest.Builder(restClient, "user/")
         .addHeaders(new RestRequestHeader("TOKEN", token))
         .build();
 
-new Callback<Object>() {
+new Callback() {
             @Override
-            public void onSuccess(Object response, int responseCode) {
-                User user = (User) response;
+            public void onSuccess(RestResponse restResponse) {
+                User user = (User) restResponse.getResponseBody(User.class);
                 //...
             }
 
             @Override
-            public void onFailure(String s, int i) {
-                Log.e(TAG, "failed to load user data | " + s + " " i );
+            public void onFailure(RestErrorResponse restErrorResponse) {
+                Log.e(TAG, restErrorResponse.getErrorBody());
             }
         });
 
-request.executeAsync(User.class, callback);
+request.executeAsync(callback);
 ```
 #### Rest Client
 Client with default settings
@@ -62,32 +62,43 @@ RestRequest request = new RestRequest.Builder(restClient, "user/create/")
 ```
 
 #### Executing requests
-Object response from json
 ```Java
-request.executeAsync(User.class, callback);
-```
-Raw string response
-```Java
-request.executeAsyncRaw(callback);
+request.executeAsync(callback);
 ```
 Response from bytes (might be used for downloading images from server)
 ```Java
 request.getBytesAsync(callback)
 ```
 #### Callbacks
-Callback types: Object, String, byte[]  
-example:
+Callback
 ``` Java
-new Callback<Object>() {
-            @Override
-            public void onSuccess(Object response, int responseCode) {
-                User user = (User) response;
+new Callback() {
+           @Override
+            public void onSuccess(RestResponse restResponse) {
+                User user = (User) restResponse.getResponseBody(User.class);
                 //...
             }
 
             @Override
-            public void onFailure(String s, int i) {
-                Log.e(TAG, "failed to load user data | " + s + " " i );
+            public void onFailure(RestErrorResponse restErrorResponse) {
+                Log.e(TAG, restErrorResponse.getErrorBody());
             }
         });
+```
+ByteCallback
+``` Java
+new ByteCallback() {
+            @Override
+            public void onSuccess(byte[] bytes, int i, String message) {
+                activity.runOnUiThread(()->{
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                    displayedFriend.profilePicture = bitmap;
+                    updateProfilePicture(bitmap);
+                });
+            }
+
+            @Override
+            public void onFailure(RestErrorResponse restErrorResponse) {
+
+            }
 ```
