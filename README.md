@@ -65,7 +65,7 @@ RestRequest request = new RestRequest.Builder(restClient, "user/create/")
 ```Java
 request.executeAsync(callback);
 ```
-Response from bytes (might be used for downloading images from server)
+Response in bytes (might be used for downloading images from server)
 ```Java
 request.getBytesAsync(callback)
 ```
