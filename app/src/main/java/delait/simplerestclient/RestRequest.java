@@ -88,7 +88,7 @@ public class RestRequest {
             DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
 
             if (requestBody instanceof String)
-                wr.writeBytes((String) requestBody);
+                wr.write(((String)requestBody).getBytes("UTF-8"));
             else if (requestBody instanceof byte[]) {
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
                 out.write((byte[]) requestBody);
@@ -96,7 +96,7 @@ public class RestRequest {
                 out.flush();
                 out.close();
             } else
-                wr.writeBytes(client.gson.toJson(requestBody));
+                wr.write(client.gson.toJson(requestBody).getBytes("UTF-8"));
 
             wr.close();
         }
