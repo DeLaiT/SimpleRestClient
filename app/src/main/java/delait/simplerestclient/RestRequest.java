@@ -1,10 +1,7 @@
 package delait.simplerestclient;
 
 import android.os.AsyncTask;
-import android.telecom.Call;
 import android.util.Log;
-
-import com.google.gson.Gson;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -28,9 +25,11 @@ public class RestRequest {
 
     private static final String TAG = "RestRequest";
 
-    private RestRequest() { }
+    private RestRequest() {
+    }
 
-    public void executeAsyncRaw(final Callback<String> callback){
+
+    public void executeAsync(final Callback callback) {
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
@@ -38,17 +37,17 @@ public class RestRequest {
                     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                     setupConnection(connection);
                     tryToSendRequestBody(connection);
-                    handleRawResponse(connection, callback);
+                    handleResponse(connection, callback);
                 } catch (Exception e) {
                     Log.e(TAG, e.getMessage());
-                    e.printStackTrace();
-                    callback.onFailure(e.getMessage(), 0);
+                    callback.onFailure(new RestErrorResponse(
+                            e.getMessage(), 0, "An exception occurred"));
                 }
             }
         });
     }
 
-    public void executeAsync(final Class objectClass, final Callback<Object> callback){
+    public void getBytesAsync(final ByteCallback byteCallback) {
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
@@ -56,35 +55,18 @@ public class RestRequest {
                     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                     setupConnection(connection);
                     tryToSendRequestBody(connection);
-                    handleObjectResponse(connection, callback, objectClass);
+                    handleBytesResponse(connection, byteCallback);
                 } catch (Exception e) {
                     Log.e(TAG, e.getMessage());
                     e.printStackTrace();
-                    callback.onFailure(e.getMessage(), 0);
+                    byteCallback.onFailure(new RestErrorResponse(
+                            e.getMessage(), 0, "An exception occurred"));
                 }
             }
         });
     }
 
-    public void getBytesAsync(final Callback<byte[]> callback){
-        AsyncTask.execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                    setupConnection(connection);
-                    tryToSendRequestBody(connection);
-                    handleBytesResponse(connection, callback);
-                } catch (Exception e) {
-                    Log.e(TAG, e.getMessage());
-                    e.printStackTrace();
-                    callback.onFailure(e.getMessage(), 0);
-                }
-            }
-        });
-    }
-
-    public void addHeaders(RestRequestHeader... headers){
+    public void addHeaders(RestRequestHeader... headers) {
         this.headers.addAll(Arrays.asList(headers));
     }
 
@@ -95,7 +77,7 @@ public class RestRequest {
         connection.setReadTimeout(client.timeout);
         connection.setConnectTimeout(client.timeout);
 
-        for(int i = 0; i < headers.size(); i++){
+        for (int i = 0; i < headers.size(); i++) {
             RestRequestHeader header = headers.get(i);
             connection.addRequestProperty(header.key, header.value);
         }
@@ -105,50 +87,39 @@ public class RestRequest {
         if (requestBody != null) {
             DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
 
-            if(requestBody instanceof String)
-                wr.writeBytes((String)requestBody);
-            else if(requestBody instanceof byte[]) {
+            if (requestBody instanceof String)
+                wr.writeBytes((String) requestBody);
+            else if (requestBody instanceof byte[]) {
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
                 out.write((byte[]) requestBody);
                 out.writeTo(connection.getOutputStream());
                 out.flush();
                 out.close();
-            }
-            else
+            } else
                 wr.writeBytes(client.gson.toJson(requestBody));
 
             wr.close();
         }
     }
 
-    private void handleRawResponse(HttpURLConnection connection, Callback<String> callback) throws Exception {
+    private void handleResponse(HttpURLConnection connection, Callback callback) throws Exception {
         String response = readResponse(connection);
 
-        if(connection.getResponseCode() < 300){
+        if (connection.getResponseCode() < 300) {
             Log.i(TAG, getRequestTypeFromEnum(type) + " result: " + connection.getResponseCode() + " " + connection.getResponseMessage());
-            callback.onSuccess(response, connection.getResponseCode());
-        }
-        else {
+
+            callback.onSuccess(new RestResponse(response,
+                    connection.getResponseCode(), connection.getResponseMessage(), client.gson));
+        } else {
             Log.w(TAG, getRequestTypeFromEnum(type) + " result: " + connection.getResponseCode() + " " + connection.getResponseMessage());
-            callback.onFailure(connection.getResponseMessage(), connection.getResponseCode());
+
+            callback.onFailure(new RestErrorResponse(response,
+                    connection.getResponseCode(), connection.getResponseMessage()));
         }
     }
 
-    private void handleObjectResponse(HttpURLConnection connection, Callback<Object> callback, Class objectClass) throws Exception {
-        String response = readResponse(connection);
-
-        if(connection.getResponseCode() < 300){
-            Log.i(TAG, getRequestTypeFromEnum(type) + " result: " + connection.getResponseCode() + " " + connection.getResponseMessage());
-            callback.onSuccess(client.gson.fromJson(response, objectClass), connection.getResponseCode());
-        }
-        else {
-            Log.w(TAG, getRequestTypeFromEnum(type) + " result: " + connection.getResponseCode() + " " + connection.getResponseMessage());
-            callback.onFailure(connection.getResponseMessage(), connection.getResponseCode());
-        }
-    }
-
-    private void handleBytesResponse(HttpURLConnection connection, Callback<byte[]> callback) throws Exception{
-        if(connection.getResponseCode() < 300){
+    private void handleBytesResponse(HttpURLConnection connection, ByteCallback byteCallback) throws Exception {
+        if (connection.getResponseCode() < 300) {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             InputStream in = connection.getInputStream();
 
@@ -159,14 +130,24 @@ public class RestRequest {
                 baos.write(b, 0, s);
             }
 
-            callback.onSuccess(baos.toByteArray(), connection.getResponseCode());
-        }
-        else{
-            callback.onFailure(connection.getResponseMessage(), connection.getResponseCode());
+            byteCallback.onSuccess(baos.toByteArray(), connection.getResponseCode(), connection.getResponseMessage());
+        } else {
+            InputStream is = connection.getErrorStream();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+            StringBuilder response = new StringBuilder();
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                response.append(line);
+                response.append('\r');
+            }
+            reader.close();
+
+            byteCallback.onFailure(new RestErrorResponse(response.toString(), connection.getResponseCode(), connection.getResponseMessage()));
         }
     }
 
-    private String readResponse(HttpURLConnection connection) throws Exception{
+    private String readResponse(HttpURLConnection connection) throws Exception {
         InputStream is = connection.getResponseCode() < 300 ? connection.getInputStream() : connection.getErrorStream();
         BufferedReader reader = new BufferedReader(new InputStreamReader(is));
         StringBuilder response = new StringBuilder();
@@ -181,8 +162,8 @@ public class RestRequest {
         return response.toString();
     }
 
-    private String getRequestTypeFromEnum(RequestType requestType){
-        switch (requestType){
+    private String getRequestTypeFromEnum(RequestType requestType) {
+        switch (requestType) {
             case GET:
                 return "GET";
             case POST:
@@ -198,10 +179,10 @@ public class RestRequest {
         }
     }
 
-    public static class Builder{
+    public static class Builder {
         private RestRequest request = new RestRequest();
 
-        public Builder(RestClient client, String fileName){
+        public Builder(RestClient client, String fileName) {
             try {
                 request.client = client;
                 request.url = new URL(client.url, fileName);
@@ -210,22 +191,22 @@ public class RestRequest {
             }
         }
 
-        public Builder requestType(RequestType requestType){
+        public Builder requestType(RequestType requestType) {
             request.type = requestType;
             return Builder.this;
         }
 
-        public Builder requestBody(Object body){
+        public Builder requestBody(Object body) {
             request.requestBody = body;
             return Builder.this;
         }
 
-        public Builder addHeaders(RestRequestHeader... headers){
+        public Builder addHeaders(RestRequestHeader... headers) {
             request.headers.addAll(Arrays.asList(headers));
             return Builder.this;
         }
 
-        public RestRequest build(){
+        public RestRequest build() {
             return request;
         }
     }

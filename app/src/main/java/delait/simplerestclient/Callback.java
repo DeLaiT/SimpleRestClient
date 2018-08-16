@@ -1,6 +1,6 @@
 package delait.simplerestclient;
 
-public interface Callback<T> {
-    void onSuccess(T responseBody, int code);
-    void onFailure(String message, int code);
+public interface Callback {
+    void onSuccess(RestResponse restResponse);
+    void onFailure(RestErrorResponse restErrorResponse);
 }
