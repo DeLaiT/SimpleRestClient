@@ -3,7 +3,7 @@
 ### Installation
 ``` gradle
 dependencies {
-    implementation 'delait.android:simple-rest-client:1.0.1'
+    implementation 'delait.android:simple-rest-client:1.1.1'
 }
 ```
 
@@ -90,15 +90,11 @@ ByteCallback
 new ByteCallback() {
             @Override
             public void onSuccess(byte[] bytes, int i, String message) {
-                activity.runOnUiThread(()->{
-                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                    displayedFriend.profilePicture = bitmap;
-                    updateProfilePicture(bitmap);
-                });
+                //...
             }
 
             @Override
             public void onFailure(RestErrorResponse restErrorResponse) {
-
+                //...
             }
 ```
