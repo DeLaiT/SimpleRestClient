@@ -11,7 +11,7 @@ public class RestResponse {
     public final String statusMessage;
     Gson gson;
 
-    RestResponse(String body, int status, String statusMessage, Gson gson) {
+    public RestResponse(String body, int status, String statusMessage, Gson gson) {
         this.status = status;
         this.statusMessage = statusMessage;
         this.gson = gson;

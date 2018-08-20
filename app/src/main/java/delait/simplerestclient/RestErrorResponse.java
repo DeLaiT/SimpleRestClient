@@ -5,7 +5,7 @@ public class RestErrorResponse {
     public final String statusMessage;
     private String errorBody;
 
-    RestErrorResponse (String errorBody, int status, String statusMessage){
+    public RestErrorResponse (String errorBody, int status, String statusMessage){
         this.errorBody = errorBody;
         this.status = status;
         this.statusMessage = statusMessage;
