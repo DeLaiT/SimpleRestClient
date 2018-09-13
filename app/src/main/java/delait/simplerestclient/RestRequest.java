@@ -1,7 +1,10 @@
 package delait.simplerestclient;
 
+import android.net.SSLCertificateSocketFactory;
 import android.os.AsyncTask;
 import android.util.Log;
+
+import org.apache.http.conn.ssl.AllowAllHostnameVerifier;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -14,6 +17,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import javax.net.ssl.HttpsURLConnection;
 
 
 public class RestRequest {
@@ -76,6 +81,14 @@ public class RestRequest {
         connection.setDoOutput(requestBody != null);
         connection.setReadTimeout(client.timeout);
         connection.setConnectTimeout(client.timeout);
+
+        if(client.trustEveryone){
+            if (connection instanceof HttpsURLConnection) {
+                HttpsURLConnection httpsConn = (HttpsURLConnection) connection;
+                httpsConn.setSSLSocketFactory(SSLCertificateSocketFactory.getInsecure(0, null));
+                httpsConn.setHostnameVerifier(new AllowAllHostnameVerifier());
+            }
+        }
 
         for (int i = 0; i < headers.size(); i++) {
             RestRequestHeader header = headers.get(i);

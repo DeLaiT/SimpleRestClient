@@ -9,6 +9,7 @@ public class RestClient {
     URL url;
     public int timeout = 10*1000;
     public Gson gson = new Gson();
+    protected boolean trustEveryone = false;
 
     void setURL(String url){
         try {
@@ -37,6 +38,11 @@ public class RestClient {
 
         public Builder setGson(Gson gson){
             restClient.gson = gson;
+            return this;
+        }
+
+        public Builder setTrustEveryone(boolean trust){
+            restClient.trustEveryone = trust;
             return this;
         }
 
