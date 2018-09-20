@@ -7,9 +7,10 @@ import java.net.URL;
 
 public class RestClient {
     URL url;
-    public int timeout = 10*1000;
-    public Gson gson = new Gson();
+    protected int timeout = 10*1000;
+    protected Gson gson = new Gson();
     protected boolean trustEveryone = false;
+    protected boolean showLogs = true;
 
     void setURL(String url){
         try {
@@ -41,7 +42,12 @@ public class RestClient {
             return this;
         }
 
-        public Builder setTrustEveryone(boolean trust){
+        public Builder showLogs(boolean show){
+            restClient.showLogs = show;
+            return this;
+        }
+
+        public Builder trustEveryone(boolean trust){
             restClient.trustEveryone = trust;
             return this;
         }

@@ -9,6 +9,7 @@ import org.apache.http.conn.ssl.AllowAllHostnameVerifier;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -44,7 +45,9 @@ public class RestRequest {
                     tryToSendRequestBody(connection);
                     handleResponse(connection, callback);
                 } catch (Exception e) {
-                    Log.e(TAG, e.getMessage());
+                    if(client.showLogs)
+                        Log.e(TAG, e.getMessage(), e);
+
                     callback.onFailure(new RestErrorResponse(
                             e.getMessage(), 0, "An exception occurred"));
                 }
@@ -61,9 +64,10 @@ public class RestRequest {
                     setupConnection(connection);
                     tryToSendRequestBody(connection);
                     handleBytesResponse(connection, byteCallback);
-                } catch (Exception e) {
-                    Log.e(TAG, e.getMessage());
-                    e.printStackTrace();
+                } catch (IOException e) {
+                    if(client.showLogs)
+                        Log.e(TAG, e.getMessage(), e);
+
                     byteCallback.onFailure(new RestErrorResponse(
                             e.getMessage(), 0, "An exception occurred"));
                 }
@@ -75,7 +79,7 @@ public class RestRequest {
         this.headers.addAll(Arrays.asList(headers));
     }
 
-    private void setupConnection(HttpURLConnection connection) throws Exception {
+    private void setupConnection(HttpURLConnection connection) throws IOException {
         connection.setRequestMethod(getRequestTypeFromEnum(type));
         connection.setDoInput(true);
         connection.setDoOutput(requestBody != null);
@@ -96,7 +100,7 @@ public class RestRequest {
         }
     }
 
-    private void tryToSendRequestBody(HttpURLConnection connection) throws Exception {
+    private void tryToSendRequestBody(HttpURLConnection connection) throws IOException {
         if (requestBody != null) {
             DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
 
@@ -115,23 +119,29 @@ public class RestRequest {
         }
     }
 
-    private void handleResponse(HttpURLConnection connection, Callback callback) throws Exception {
+    private void handleResponse(HttpURLConnection connection, Callback callback) throws IOException {
         String response = readResponse(connection);
 
         if (connection.getResponseCode() < 300) {
-            Log.i(TAG, getRequestTypeFromEnum(type) + " result: " + connection.getResponseCode() + " " + connection.getResponseMessage());
+            if(client.showLogs)
+                Log.i(TAG, getRequestTypeFromEnum(type) +
+                        " result: " + connection.getResponseCode() + " " +
+                        connection.getResponseMessage());
 
             callback.onSuccess(new RestResponse(response,
                     connection.getResponseCode(), connection.getResponseMessage(), client.gson));
         } else {
-            Log.w(TAG, getRequestTypeFromEnum(type) + " result: " + connection.getResponseCode() + " " + connection.getResponseMessage());
+            if(client.showLogs)
+                Log.w(TAG, getRequestTypeFromEnum(type) +
+                        " result: " + connection.getResponseCode() +
+                        " " + connection.getResponseMessage());
 
             callback.onFailure(new RestErrorResponse(response,
                     connection.getResponseCode(), connection.getResponseMessage()));
         }
     }
 
-    private void handleBytesResponse(HttpURLConnection connection, ByteCallback byteCallback) throws Exception {
+    private void handleBytesResponse(HttpURLConnection connection, ByteCallback byteCallback) throws IOException {
         if (connection.getResponseCode() < 300) {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             InputStream in = connection.getInputStream();
@@ -160,7 +170,7 @@ public class RestRequest {
         }
     }
 
-    private String readResponse(HttpURLConnection connection) throws Exception {
+    private String readResponse(HttpURLConnection connection) throws IOException {
         InputStream is = connection.getResponseCode() < 300 ? connection.getInputStream() : connection.getErrorStream();
         BufferedReader reader = new BufferedReader(new InputStreamReader(is));
         StringBuilder response = new StringBuilder();
