@@ -32,8 +32,8 @@ public class RestRequest {
     private static final String TAG = "RestRequest";
 
     private RestRequest() {
-    }
 
+    }
 
     public void executeAsync(final Callback callback) {
         AsyncTask.execute(new Runnable() {

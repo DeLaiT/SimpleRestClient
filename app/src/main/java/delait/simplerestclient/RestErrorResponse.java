@@ -14,4 +14,8 @@ public class RestErrorResponse {
     public String getErrorBody(){
         return errorBody;
     }
+
+    public String toString(){
+        return status + " " + statusMessage;
+    }
 }
