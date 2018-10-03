@@ -2,7 +2,9 @@ package delait.simplerestclient;
 
 import android.net.SSLCertificateSocketFactory;
 import android.os.AsyncTask;
+import android.telecom.Call;
 import android.util.Log;
+import android.view.View;
 
 import org.apache.http.conn.ssl.AllowAllHostnameVerifier;
 

@@ -24,7 +24,7 @@ public class RestResponse {
             try {
                 objectResponseBody = gson.fromJson(rawResponseBody, objectType);
             } catch (Exception e) {
-                Log.w("RestResponse", "Failed to get object from json. ");
+                Log.e("RestResponse", "Failed to get object from json. ");
                 e.printStackTrace();
             }
         }
