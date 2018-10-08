@@ -126,12 +126,6 @@ public class RestRequest {
         String response = readResponse(connection);
         long executionTime = new Date().getTime() - startTime.getTime();
 
-        if (client.showLogs)
-            Log.w(TAG, getRequestTypeFromEnum(type) +
-                    " result: " + connection.getResponseCode() +
-                    " " + connection.getResponseMessage() +
-                    " " + executionTime + " ms");
-
         if (connection.getResponseCode() < 300) {
             if (client.showLogs)
                 Log.i(TAG, getRequestTypeFromEnum(type) +
