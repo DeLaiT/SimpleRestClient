@@ -9,14 +9,16 @@ public class RestResponse {
     private Object objectResponseBody;
     public final int status;
     public final String statusMessage;
-    Gson gson;
+    private Gson gson;
+    public long executionTime;
 
-    public RestResponse(String body, int status, String statusMessage, Gson gson) {
+    public RestResponse(String body, int status, String statusMessage, Gson gson, long executionTime) {
         this.status = status;
         this.statusMessage = statusMessage;
         this.gson = gson;
 
         rawResponseBody = body;
+        this.executionTime = executionTime;
     }
 
     public Object getResponseBody(Class objectType) {
@@ -37,6 +39,6 @@ public class RestResponse {
     }
 
     public String toString(){
-        return status + " " + statusMessage;
+        return status + " " + statusMessage + " " + executionTime + " ms";
     }
 }

@@ -19,6 +19,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -32,47 +33,50 @@ public class RestRequest {
     private URL url;
 
     private static final String TAG = "RestRequest";
+    private Date startTime;
 
     private RestRequest() {
 
     }
 
     public void executeAsync(final Callback callback) {
-        AsyncTask.execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                    setupConnection(connection);
-                    tryToSendRequestBody(connection);
-                    handleResponse(connection, callback);
-                } catch (Exception e) {
-                    if(client.showLogs)
-                        Log.e(TAG, e.getMessage(), e);
+        AsyncTask.execute(() -> {
+            try {
+                startTime = new Date();
 
-                    callback.onFailure(new RestErrorResponse(
-                            e.getMessage(), 0, "An exception occurred"));
-                }
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                setupConnection(connection);
+                tryToSendRequestBody(connection);
+                handleResponse(connection, callback);
+            } catch (Exception e) {
+                long executionTime = new Date().getTime() - startTime.getTime();
+
+                if(client.showLogs)
+                    Log.e(TAG, e.getMessage() + " " + executionTime + " ms", e);
+
+                callback.onFailure(new RestErrorResponse(
+                        e.getMessage(), 0, "An exception occurred", executionTime));
             }
         });
     }
 
     public void getBytesAsync(final ByteCallback byteCallback) {
-        AsyncTask.execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                    setupConnection(connection);
-                    tryToSendRequestBody(connection);
-                    handleBytesResponse(connection, byteCallback);
-                } catch (IOException e) {
-                    if(client.showLogs)
-                        Log.e(TAG, e.getMessage(), e);
+        AsyncTask.execute(() -> {
+            try {
+                startTime = new Date();
 
-                    byteCallback.onFailure(new RestErrorResponse(
-                            e.getMessage(), 0, "An exception occurred"));
-                }
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                setupConnection(connection);
+                tryToSendRequestBody(connection);
+                handleBytesResponse(connection, byteCallback);
+            } catch (IOException e) {
+                long executionTime = new Date().getTime() - startTime.getTime();
+
+                if(client.showLogs)
+                    Log.e(TAG, e.getMessage() + " " + executionTime + " ms", e);
+
+                byteCallback.onFailure(new RestErrorResponse(
+                        e.getMessage(), 0, "An exception occurred", executionTime));
             }
         });
     }
@@ -123,27 +127,32 @@ public class RestRequest {
 
     private void handleResponse(HttpURLConnection connection, Callback callback) throws IOException {
         String response = readResponse(connection);
+        long executionTime = new Date().getTime() - startTime.getTime();
+
+        if(client.showLogs)
+            Log.w(TAG, getRequestTypeFromEnum(type) +
+                    " result: " + connection.getResponseCode() +
+                    " " + connection.getResponseMessage() +
+                    " " + executionTime + " ms");
 
         if (connection.getResponseCode() < 300) {
-            if(client.showLogs)
-                Log.i(TAG, getRequestTypeFromEnum(type) +
-                        " result: " + connection.getResponseCode() + " " +
-                        connection.getResponseMessage());
-
-            callback.onSuccess(new RestResponse(response,
-                    connection.getResponseCode(), connection.getResponseMessage(), client.gson));
+            callback.onSuccess(new RestResponse(response, connection.getResponseCode(),
+                    connection.getResponseMessage(), client.gson, executionTime));
         } else {
-            if(client.showLogs)
-                Log.w(TAG, getRequestTypeFromEnum(type) +
-                        " result: " + connection.getResponseCode() +
-                        " " + connection.getResponseMessage());
-
-            callback.onFailure(new RestErrorResponse(response,
-                    connection.getResponseCode(), connection.getResponseMessage()));
+            callback.onFailure(new RestErrorResponse(response, connection.getResponseCode(),
+                    connection.getResponseMessage(), executionTime));
         }
     }
 
     private void handleBytesResponse(HttpURLConnection connection, ByteCallback byteCallback) throws IOException {
+        long executionTime = new Date().getTime() - startTime.getTime();
+
+        if(client.showLogs)
+            Log.w(TAG, getRequestTypeFromEnum(type) +
+                    " result: " + connection.getResponseCode() +
+                    " " + connection.getResponseMessage() +
+                    " " + executionTime + " ms");
+
         if (connection.getResponseCode() < 300) {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             InputStream in = connection.getInputStream();
@@ -155,7 +164,8 @@ public class RestRequest {
                 baos.write(b, 0, s);
             }
 
-            byteCallback.onSuccess(baos.toByteArray(), connection.getResponseCode(), connection.getResponseMessage());
+            byteCallback.onSuccess(baos.toByteArray(), connection.getResponseCode(),
+                    connection.getResponseMessage(), executionTime);
         } else {
             InputStream is = connection.getErrorStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(is));
@@ -168,7 +178,8 @@ public class RestRequest {
             }
             reader.close();
 
-            byteCallback.onFailure(new RestErrorResponse(response.toString(), connection.getResponseCode(), connection.getResponseMessage()));
+            byteCallback.onFailure(new RestErrorResponse(response.toString(), connection.getResponseCode(),
+                    connection.getResponseMessage(), executionTime));
         }
     }
 
