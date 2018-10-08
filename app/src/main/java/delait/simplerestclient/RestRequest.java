@@ -2,9 +2,7 @@ package delait.simplerestclient;
 
 import android.net.SSLCertificateSocketFactory;
 import android.os.AsyncTask;
-import android.telecom.Call;
 import android.util.Log;
-import android.view.View;
 
 import org.apache.http.conn.ssl.AllowAllHostnameVerifier;
 
@@ -26,13 +24,12 @@ import javax.net.ssl.HttpsURLConnection;
 
 
 public class RestRequest {
+    private static final String TAG = "RestRequest";
     public RestClient client;
     public RequestType type = RequestType.GET;
     private Object requestBody = null;
     private List<RestRequestHeader> headers = new ArrayList<>();
     private URL url;
-
-    private static final String TAG = "RestRequest";
     private Date startTime;
 
     private RestRequest() {
@@ -51,7 +48,7 @@ public class RestRequest {
             } catch (Exception e) {
                 long executionTime = new Date().getTime() - startTime.getTime();
 
-                if(client.showLogs)
+                if (client.showLogs)
                     Log.e(TAG, e.getMessage() + " " + executionTime + " ms", e);
 
                 callback.onFailure(new RestErrorResponse(
@@ -72,7 +69,7 @@ public class RestRequest {
             } catch (IOException e) {
                 long executionTime = new Date().getTime() - startTime.getTime();
 
-                if(client.showLogs)
+                if (client.showLogs)
                     Log.e(TAG, e.getMessage() + " " + executionTime + " ms", e);
 
                 byteCallback.onFailure(new RestErrorResponse(
@@ -92,7 +89,7 @@ public class RestRequest {
         connection.setReadTimeout(client.timeout);
         connection.setConnectTimeout(client.timeout);
 
-        if(client.trustEveryone){
+        if (client.trustEveryone) {
             if (connection instanceof HttpsURLConnection) {
                 HttpsURLConnection httpsConn = (HttpsURLConnection) connection;
                 httpsConn.setSSLSocketFactory(SSLCertificateSocketFactory.getInsecure(0, null));
@@ -111,7 +108,7 @@ public class RestRequest {
             DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
 
             if (requestBody instanceof String)
-                wr.write(((String)requestBody).getBytes("UTF-8"));
+                wr.write(((String) requestBody).getBytes("UTF-8"));
             else if (requestBody instanceof byte[]) {
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
                 out.write((byte[]) requestBody);
@@ -129,16 +126,28 @@ public class RestRequest {
         String response = readResponse(connection);
         long executionTime = new Date().getTime() - startTime.getTime();
 
-        if(client.showLogs)
+        if (client.showLogs)
             Log.w(TAG, getRequestTypeFromEnum(type) +
                     " result: " + connection.getResponseCode() +
                     " " + connection.getResponseMessage() +
                     " " + executionTime + " ms");
 
         if (connection.getResponseCode() < 300) {
+            if (client.showLogs)
+                Log.i(TAG, getRequestTypeFromEnum(type) +
+                        " result: " + connection.getResponseCode() +
+                        " " + connection.getResponseMessage() +
+                        " " + executionTime + " ms");
+
             callback.onSuccess(new RestResponse(response, connection.getResponseCode(),
                     connection.getResponseMessage(), client.gson, executionTime));
         } else {
+            if (client.showLogs)
+                Log.w(TAG, getRequestTypeFromEnum(type) +
+                        " result: " + connection.getResponseCode() +
+                        " " + connection.getResponseMessage() +
+                        " " + executionTime + " ms");
+
             callback.onFailure(new RestErrorResponse(response, connection.getResponseCode(),
                     connection.getResponseMessage(), executionTime));
         }
@@ -147,13 +156,13 @@ public class RestRequest {
     private void handleBytesResponse(HttpURLConnection connection, ByteCallback byteCallback) throws IOException {
         long executionTime = new Date().getTime() - startTime.getTime();
 
-        if(client.showLogs)
-            Log.w(TAG, getRequestTypeFromEnum(type) +
-                    " result: " + connection.getResponseCode() +
-                    " " + connection.getResponseMessage() +
-                    " " + executionTime + " ms");
-
         if (connection.getResponseCode() < 300) {
+            if (client.showLogs)
+                Log.i(TAG, getRequestTypeFromEnum(type) +
+                        " result: " + connection.getResponseCode() +
+                        " " + connection.getResponseMessage() +
+                        " " + executionTime + " ms");
+
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             InputStream in = connection.getInputStream();
 
@@ -167,6 +176,12 @@ public class RestRequest {
             byteCallback.onSuccess(baos.toByteArray(), connection.getResponseCode(),
                     connection.getResponseMessage(), executionTime);
         } else {
+            if (client.showLogs)
+                Log.w(TAG, getRequestTypeFromEnum(type) +
+                        " result: " + connection.getResponseCode() +
+                        " " + connection.getResponseMessage() +
+                        " " + executionTime + " ms");
+
             InputStream is = connection.getErrorStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(is));
             StringBuilder response = new StringBuilder();
