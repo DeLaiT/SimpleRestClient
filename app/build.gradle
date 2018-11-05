@@ -3,7 +3,7 @@ apply plugin: 'com.android.library'
 ext{
     PUBLISH_GROUP_ID = 'delait.android'
     PUBLISH_ARTIFACT_ID = 'simple-rest-client'
-    PUBLISH_VERSION = '1.1.8'
+    PUBLISH_VERSION = '1.1.9'
 }
 
 android {
@@ -11,8 +11,8 @@ android {
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 27
-        versionCode 118
-        versionName "1.1.8"
+        versionCode 119
+        versionName "1.1.9"
         setProperty("archivesBaseName", "simplerestclient")
     }
     buildTypes {
@@ -29,6 +29,7 @@ android {
 
 dependencies {
     implementation 'com.google.code.gson:gson:2.8.5'
+    implementation 'org.greenrobot:eventbus:3.1.1'
 }
 
 apply from: 'https://raw.githubusercontent.com/blundell/release-android-library/master/android-release-aar.gradle'

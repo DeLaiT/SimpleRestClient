@@ -31,17 +31,17 @@ public class RestRequest {
     private List<RestRequestHeader> headers = new ArrayList<>();
     private URL url;
     private Date startTime;
-
+    private HttpURLConnection connection;
     private RestRequest() {
 
     }
 
     public void executeAsync(final Callback callback) {
+
         AsyncTask.execute(() -> {
             try {
                 startTime = new Date();
-
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection = (HttpURLConnection) url.openConnection();
                 setupConnection(connection);
                 tryToSendRequestBody(connection);
                 handleResponse(connection, callback);

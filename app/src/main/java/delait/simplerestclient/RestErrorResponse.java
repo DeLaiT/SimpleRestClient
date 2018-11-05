@@ -1,5 +1,7 @@
 package delait.simplerestclient;
 
+import org.greenrobot.eventbus.EventBus;
+
 public class RestErrorResponse {
     public final int status;
     public final String statusMessage;
@@ -11,6 +13,8 @@ public class RestErrorResponse {
         this.status = status;
         this.statusMessage = statusMessage;
         this.executionTime = executionTime;
+
+        EventBus.getDefault().post(this);
     }
 
     public String getErrorBody(){
