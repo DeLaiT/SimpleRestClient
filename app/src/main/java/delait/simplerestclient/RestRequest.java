@@ -136,7 +136,7 @@ public class RestRequest {
         if (connection.getResponseCode() < 300) {
             if (client.showLogs)
                 Log.i(TAG, getRequestTypeFromEnum(type) +
-                        " " + client.url.getPath() +
+                        " " + url.getPath() +
                         " result: " + connection.getResponseCode() +
                         " " + connection.getResponseMessage() +
                         " " + executionTime + " ms");
@@ -146,7 +146,7 @@ public class RestRequest {
         } else {
             if (client.showLogs)
                 Log.w(TAG, getRequestTypeFromEnum(type) +
-                        " " + client.url.getPath() +
+                        " " + url.getPath() +
                         " result: " + connection.getResponseCode() +
                         " " + connection.getResponseMessage() +
                         " " + executionTime + " ms");
@@ -162,7 +162,7 @@ public class RestRequest {
         if (connection.getResponseCode() < 300) {
             if (client.showLogs)
                 Log.i(TAG, getRequestTypeFromEnum(type) +
-                        " " + client.url.getPath() +
+                        " " + url.getPath() +
                         " result: " + connection.getResponseCode() +
                         " " + connection.getResponseMessage() +
                         " " + executionTime + " ms");
@@ -182,7 +182,7 @@ public class RestRequest {
         } else {
             if (client.showLogs)
                 Log.w(TAG, getRequestTypeFromEnum(type) +
-                        " " + client.url.getPath() +
+                        " " + url.getPath() +
                         " result: " + connection.getResponseCode() +
                         " " + connection.getResponseMessage() +
                         " " + executionTime + " ms");
