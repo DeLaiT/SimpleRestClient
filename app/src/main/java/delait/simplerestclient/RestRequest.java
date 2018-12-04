@@ -37,45 +37,52 @@ public class RestRequest {
     }
 
     public void executeAsync(final Callback callback) {
-
         AsyncTask.execute(() -> {
-            try {
-                startTime = new Date();
-                connection = (HttpURLConnection) url.openConnection();
-                setupConnection(connection);
-                tryToSendRequestBody(connection);
-                handleResponse(connection, callback);
-            } catch (Exception e) {
-                long executionTime = new Date().getTime() - startTime.getTime();
-
-                if (client.showLogs)
-                    Log.e(TAG, e.getMessage() + " " + executionTime + " ms", e);
-
-                callback.onFailure(new RestErrorResponse(
-                        e.getMessage(), 0, "An exception occurred", executionTime));
-            }
+           execute(callback);
         });
     }
 
     public void getBytesAsync(final ByteCallback byteCallback) {
         AsyncTask.execute(() -> {
-            try {
-                startTime = new Date();
-
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                setupConnection(connection);
-                tryToSendRequestBody(connection);
-                handleBytesResponse(connection, byteCallback);
-            } catch (IOException e) {
-                long executionTime = new Date().getTime() - startTime.getTime();
-
-                if (client.showLogs)
-                    Log.e(TAG, e.getMessage() + " " + executionTime + " ms", e);
-
-                byteCallback.onFailure(new RestErrorResponse(
-                        e.getMessage(), 0, "An exception occurred", executionTime));
-            }
+           getBytes(byteCallback);
         });
+    }
+
+    public void getBytes(final ByteCallback byteCallback) {
+        try {
+            startTime = new Date();
+
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            setupConnection(connection);
+            tryToSendRequestBody(connection);
+            handleBytesResponse(connection, byteCallback);
+        } catch (IOException e) {
+            long executionTime = new Date().getTime() - startTime.getTime();
+
+            if (client.showLogs)
+                Log.e(TAG, e.getMessage() + " " + executionTime + " ms", e);
+
+            byteCallback.onFailure(new RestErrorResponse(
+                    e.getMessage(), 0, "An exception occurred", executionTime));
+        }
+    }
+
+    public void execute(final Callback callback){
+        try {
+            startTime = new Date();
+            connection = (HttpURLConnection) url.openConnection();
+            setupConnection(connection);
+            tryToSendRequestBody(connection);
+            handleResponse(connection, callback);
+        } catch (Exception e) {
+            long executionTime = new Date().getTime() - startTime.getTime();
+
+            if (client.showLogs)
+                Log.e(TAG, e.getMessage() + " " + executionTime + " ms", e);
+
+            callback.onFailure(new RestErrorResponse(
+                    e.getMessage(), 0, "An exception occurred", executionTime));
+        }
     }
 
     public void addHeaders(RestRequestHeader... headers) {
