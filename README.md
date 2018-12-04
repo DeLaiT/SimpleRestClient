@@ -1,9 +1,10 @@
 # Simple Rest Client - WIP
 [![Build Status](https://travis-ci.com/DeLaiT/SimpleRestClient-Android.svg?branch=master)](https://travis-ci.com/DeLaiT/SimpleRestClient-Android)
+[ ![Download](https://api.bintray.com/packages/delait/SimpleRestClient/simple-rest-client/images/download.svg?version=1.2.2) ](https://bintray.com/delait/SimpleRestClient/simple-rest-client/1.2.2/link)
 ### Installation
 ``` gradle
 dependencies {
-    implementation 'delait.android:simple-rest-client:1.1.1'
+    implementation 'delait.android:simple-rest-client:x.x.x'
 }
 ```
 
