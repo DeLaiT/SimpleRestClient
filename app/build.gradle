@@ -3,17 +3,18 @@ apply plugin: 'com.android.library'
 ext{
     PUBLISH_GROUP_ID = 'delait.android'
     PUBLISH_ARTIFACT_ID = 'simple-rest-client'
-    PUBLISH_VERSION = '1.2.3'
+    PUBLISH_VERSION = '1.2.4'
 
 }
 
 android {
     compileSdkVersion 28
+    buildToolsVersion "28.0.3"
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 28
-        versionCode 123
-        versionName "1.2.3"
+        versionCode 124
+        versionName "1.2.4"
         setProperty("archivesBaseName", "simplerestclient")
     }
     buildTypes {

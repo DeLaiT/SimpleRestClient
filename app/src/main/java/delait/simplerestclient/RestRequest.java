@@ -120,8 +120,6 @@ public class RestRequest {
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
                 out.write((byte[]) requestBody);
                 out.writeTo(connection.getOutputStream());
-                out.flush();
-                out.close();
             } else
                 wr.write(client.gson.toJson(requestBody).getBytes("UTF-8"));
 
@@ -136,8 +134,8 @@ public class RestRequest {
         if (connection.getResponseCode() < 300) {
             if (client.showLogs)
                 Log.i(TAG, getRequestTypeFromEnum(type) +
-                        " " + url.getPath() +
-                        " result: " + connection.getResponseCode() +
+                        " '" + url.getPath() +
+                        "' result: " + connection.getResponseCode() +
                         " " + connection.getResponseMessage() +
                         " " + executionTime + " ms");
 
@@ -146,8 +144,8 @@ public class RestRequest {
         } else {
             if (client.showLogs)
                 Log.w(TAG, getRequestTypeFromEnum(type) +
-                        " " + url.getPath() +
-                        " result: " + connection.getResponseCode() +
+                        " '" + url.getPath() +
+                        " 'result: " + connection.getResponseCode() +
                         " " + connection.getResponseMessage() +
                         " " + executionTime + " ms");
 
@@ -162,8 +160,8 @@ public class RestRequest {
         if (connection.getResponseCode() < 300) {
             if (client.showLogs)
                 Log.i(TAG, getRequestTypeFromEnum(type) +
-                        " " + url.getPath() +
-                        " result: " + connection.getResponseCode() +
+                        " '" + url.getPath() +
+                        " 'result: " + connection.getResponseCode() +
                         " " + connection.getResponseMessage() +
                         " " + executionTime + " ms");
 
@@ -182,8 +180,8 @@ public class RestRequest {
         } else {
             if (client.showLogs)
                 Log.w(TAG, getRequestTypeFromEnum(type) +
-                        " " + url.getPath() +
-                        " result: " + connection.getResponseCode() +
+                        " '" + url.getPath() +
+                        " 'result: " + connection.getResponseCode() +
                         " " + connection.getResponseMessage() +
                         " " + executionTime + " ms");
 
