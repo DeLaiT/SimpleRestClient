@@ -51,8 +51,8 @@ public class RestRequest {
     public void getBytes(final ByteCallback byteCallback) {
         try {
             startTime = new Date();
-
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
             setupConnection(connection);
             tryToSendRequestBody(connection);
             handleBytesResponse(connection, byteCallback);
@@ -61,6 +61,8 @@ public class RestRequest {
 
             if (client.showLogs)
                 Log.e(TAG, e.getMessage() + " " + executionTime + " ms", e);
+
+            e.printStackTrace();
 
             byteCallback.onFailure(new RestErrorResponse(
                     e.getMessage(), 0, "An exception occurred", executionTime));
@@ -168,7 +170,7 @@ public class RestRequest {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             InputStream in = connection.getInputStream();
 
-            byte[] b = new byte[1024];
+            byte[] b = new byte[4096];
             int s = 0;
 
             while ((s = in.read(b)) > 0) {
